@@ -1,0 +1,33 @@
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# Java
+backend/target/
+backend/.mvn/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+.sixth/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+
+# Logs
+*.log
+build.log
+
+# Env
+.env
+*.local
