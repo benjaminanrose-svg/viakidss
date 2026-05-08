@@ -170,19 +170,19 @@ export const DashboardLayout = ({ children }) => {
             <div className="flex-1 flex flex-col h-full overflow-hidden relative">
                 {/* Header */}
                 <header className="h-14 md:h-16 bg-slate-900/40 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-3 md:px-6 z-30 safe-top shrink-0">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
                         <button
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            className="p-2 hover:bg-white/10 rounded-xl transition-colors md:hidden touch-manipulation"
+                            className="p-2 hover:bg-white/10 rounded-xl transition-colors md:hidden touch-manipulation shrink-0"
                         >
                             <Menu size={22} />
                         </button>
-                        <h2 className="text-xs md:text-sm text-slate-400 truncate max-w-[200px] sm:max-w-none">
+                        <h2 className="text-xs md:text-sm text-slate-400 truncate">
                             {currentMenu.find(item => location.pathname === item.path)?.label || roleLabels[role]}
                         </h2>
                     </div>
 
-                    <div className="flex items-center gap-2 md:gap-3">
+                    <div className="flex items-center gap-2 md:gap-3 shrink-0">
                         <div className="hidden sm:flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
                             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                             <span className="text-xs text-slate-400">En línea</span>

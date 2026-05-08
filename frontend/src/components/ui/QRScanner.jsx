@@ -83,9 +83,10 @@ export const QRScanner = ({ onScan, onError, active = true }) => {
             const html5QrCode = new Html5Qrcode(containerIdRef.current);
             scannerRef.current = html5QrCode;
 
+            const qrSize = Math.min(window.innerWidth - 64, 250);
             const config = {
                 fps: 15,
-                qrbox: { width: 250, height: 250 },
+                qrbox: { width: qrSize, height: qrSize },
                 aspectRatio: 1.0,
                 disableFlip: false,
             };
@@ -95,7 +96,7 @@ export const QRScanner = ({ onScan, onError, active = true }) => {
                     selectedCamera.id,
                     {
                         fps: 15,
-                        qrbox: { width: 250, height: 250 },
+                        qrbox: { width: qrSize, height: qrSize },
                         aspectRatio: 1.0,
                     },
                     (decodedText) => {
@@ -204,7 +205,7 @@ export const QRScanner = ({ onScan, onError, active = true }) => {
             )}
 
             <div className="relative w-full max-w-sm rounded-2xl overflow-hidden border border-white/10 bg-black">
-                <div id={containerIdRef.current} style={{ minHeight: 300 }} />
+                <div id={containerIdRef.current} style={{ minHeight: 220, maxHeight: '70vw' }} />
                 {!scanning && permissionState === 'granted' && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-sm gap-4">
                         <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center animate-float">
