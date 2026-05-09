@@ -91,3 +91,23 @@ docker run -d --name viakids-rabbitmq -p 5672:5672 -p 15672:15672 -p 61613:61613
 | `VITE_WS_URL` | URL WebSocket | `ws://localhost:8081/ws` |
 | `SPRING_DATASOURCE_URL` | JDBC PostgreSQL | Neon DB |
 | `JWT_SECRET` | Secreto JWT | (configurado) |
+| `CORS_ORIGINS` | Orígenes permitidos (separados por coma) | `http://localhost:5173,https://*.vercel.app` |
+| `PORT` | Puerto del backend (Railway lo asigna automáticamente) | `8081` |
+
+## Deployment
+
+### Backend en Railway
+1. Crear nuevo proyecto y conectar el repositorio de GitHub
+2. **Settings → Source → Root Directory:** `/backend`
+3. Railway detecta el `pom.xml` y compila automáticamente con Maven
+4. Agregar variables de entorno: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGINS`
+5. Railway expone el servicio en `https://<proyecto>.up.railway.app`
+
+### Frontend en Vercel
+1. Importar el repositorio en Vercel
+2. **Root Directory:** `frontend`
+3. Framework: Vite (detección automática)
+4. Variable de entorno: `VITE_API_URL=https://<tu-backend>.up.railway.app/api`
+5. Deploy automático en cada push
+
+> El archivo `vercel.json` incluido configura los rewrites necesarios para que React Router funcione sin errores 404 en rutas internas.
