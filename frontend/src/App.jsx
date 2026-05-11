@@ -90,8 +90,10 @@ function App() {
             <Router>
                 <AuthProvider>
                     <ToastProvider>
-                        <OfflineBanner />
-                        <AppContent splashDone={!showSplash} />
+                        <Routes>
+                            <Route path="/" element={<LoginPage />} />
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
                     </ToastProvider>
                 </AuthProvider>
             </Router>
