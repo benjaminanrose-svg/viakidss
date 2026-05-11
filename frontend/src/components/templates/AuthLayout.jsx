@@ -31,7 +31,7 @@ export const AuthLayout = ({ children, title, subtitle }) => {
 
             {/* Tarjeta Principal Glassmorphism */}
             <div className="w-full max-w-5xl bg-white/60 backdrop-blur-xl border border-white/50 shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row z-10 transition-all duration-500 hover:shadow-blue-900/10
-                animate-[fadeIn_0.6s_ease-out_forwards,slideInUp_0.6s_ease-out_forwards] opacity-0">
+                animate-[fadeIn_0.6s_ease-out_forwards,slideInUp_0.6s_ease-out_forwards]">
 
                 {/* Lado Izquierdo: Formulario */}
                 <div className="w-full md:w-1/2 p-8 sm:p-12 flex flex-col justify-center">
@@ -52,7 +52,7 @@ export const AuthLayout = ({ children, title, subtitle }) => {
 
                 {/* Lado Derecho: Branding */}
                 <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 p-12 flex-col justify-center items-center text-center relative overflow-hidden
-                    animate-[slideInLeft_0.7s_ease-out_0.2s_forwards] opacity-0">
+                    animate-[slideInLeft_0.7s_ease-out_0.2s_forwards]">
 
                     {/* Animated gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 via-transparent to-purple-500/20 animate-pulse" />
