@@ -86,16 +86,9 @@ function App() {
     }
 
     return (
-        <ErrorBoundary>
-            <Router>
-                <AuthProvider>
-                    <ToastProvider>
-                        <OfflineBanner />
-                        <AppContent splashDone={!showSplash} />
-                    </ToastProvider>
-                </AuthProvider>
-            </Router>
-        </ErrorBoundary>
+        <div style={{ minHeight: '100vh', background: '#f0f4ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
+            App cargando...
+        </div>
     );
 }
 
