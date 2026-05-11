@@ -86,14 +86,16 @@ function App() {
     }
 
     return (
-        <Router>
-            <AuthProvider>
-                <ToastProvider>
-                    <OfflineBanner />
-                    <AppContent splashDone={!showSplash} />
-                </ToastProvider>
-            </AuthProvider>
-        </Router>
+        <ErrorBoundary>
+            <Router>
+                <AuthProvider>
+                    <ToastProvider>
+                        <OfflineBanner />
+                        <AppContent splashDone={!showSplash} />
+                    </ToastProvider>
+                </AuthProvider>
+            </Router>
+        </ErrorBoundary>
     );
 }
 
