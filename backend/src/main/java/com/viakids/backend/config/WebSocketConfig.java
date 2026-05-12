@@ -1,6 +1,7 @@
 package com.viakids.backend.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -9,10 +10,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
+@ConditionalOnProperty(name = "app.rabbitmq.enabled", havingValue = "true")
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
-    @Value("${app.rabbitmq.enabled:false}")
-    private boolean rabbitMqEnabled;
 
     @Value("${spring.rabbitmq.host:localhost}")
     private String rabbitHost;
@@ -27,10 +26,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String rabbitPass;
 
     @Override
-public void configureMessageBroker(MessageBrokerRegistry config) {
-    config.enableSimpleBroker("/queue");
-    config.setApplicationDestinationPrefixes("/app");
-}
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableStompBrokerRelay("/queue", "/topic")
+                .setRelayHost(rabbitHost)
+                .setRelayPort(stompPort)
+                .setClientLogin(rabbitUser)
+                .setClientPasscode(rabbitPass)
+                .setSystemLogin(rabbitUser)
+                .setSystemPasscode(rabbitPass);
+        config.setApplicationDestinationPrefixes("/app");
+    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
