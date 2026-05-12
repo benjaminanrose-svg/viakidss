@@ -27,20 +27,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String rabbitPass;
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        if (rabbitMqEnabled) {
-            config.enableStompBrokerRelay("/queue", "/topic")
-                    .setRelayHost(rabbitHost)
-                    .setRelayPort(stompPort)
-                    .setClientLogin(rabbitUser)
-                    .setClientPasscode(rabbitPass)
-                    .setSystemLogin(rabbitUser)
-                    .setSystemPasscode(rabbitPass);
-        } else {
-            config.enableSimpleBroker("/queue");
-        }
-        config.setApplicationDestinationPrefixes("/app");
-    }
+public void configureMessageBroker(MessageBrokerRegistry config) {
+    config.enableSimpleBroker("/queue");
+    config.setApplicationDestinationPrefixes("/app");
+}
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
