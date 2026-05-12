@@ -10,6 +10,7 @@ export default defineConfig({
   build: {
     cssMinify: 'esbuild',
     chunkSizeWarningLimit: 2000,
+    // Force rebuild
   },
   server: {
     proxy: {
