@@ -1,5 +1,6 @@
 package com.viakids.backend.user;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +10,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAll() {
@@ -27,6 +30,10 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
         }
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            throw new RuntimeException("La contraseña es obligatoria");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -37,6 +44,9 @@ public class UserService {
         user.setRol(updates.getRol());
         user.setTelefono(updates.getTelefono());
         user.setEstado(updates.getEstado());
+        if (updates.getPassword() != null && !updates.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(updates.getPassword()));
+        }
         return userRepository.save(user);
     }
 

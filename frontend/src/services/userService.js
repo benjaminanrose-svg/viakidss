@@ -1,39 +1,52 @@
 import { apiService } from './api';
 
+const ROLE_TO_BACKEND = { 'Administrador': 'ADMIN', 'Conductor': 'DRIVER', 'Apoderado': 'PARENT' };
+const ROLE_FROM_BACKEND = { 'ADMIN': 'Administrador', 'DRIVER': 'Conductor', 'PARENT': 'Apoderado' };
+const STATUS_TO_BACKEND = { 'Activo': 'ACTIVO', 'Suspendido': 'SUSPENDIDO' };
+const STATUS_FROM_BACKEND = { 'ACTIVO': 'Activo', 'SUSPENDIDO': 'Suspendido' };
+
+const normalizeUser = (u) => ({
+    id: u.id,
+    nombre: u.nombre,
+    email: u.email,
+    rol: ROLE_FROM_BACKEND[u.rol] ?? u.rol,
+    telefono: u.telefono || '',
+    estado: STATUS_FROM_BACKEND[u.estado] ?? u.estado,
+    extra: u.extra || '',
+});
+
 export const userService = {
     getAll: async () => {
         const data = await apiService.getUsers();
-        return data || [];
+        return (data || []).map(normalizeUser);
     },
 
     create: async (user) => {
         const payload = {
             nombre: user.nombre,
             email: user.email,
-            rol: user.rol,
-            telefono: user.telefono || '',
-            estado: user.estado || 'Activo',
-            extra: user.extra || '',
             password: user.contraseña,
+            rol: ROLE_TO_BACKEND[user.rol] ?? user.rol,
+            telefono: user.telefono || '',
+            estado: STATUS_TO_BACKEND[user.estado] ?? user.estado,
         };
         const data = await apiService.createUser(payload);
-        return { success: true, data };
+        return { success: true, data: normalizeUser(data) };
     },
 
     update: async (user) => {
         const payload = {
             nombre: user.nombre,
             email: user.email,
-            rol: user.rol,
+            rol: ROLE_TO_BACKEND[user.rol] ?? user.rol,
             telefono: user.telefono || '',
-            estado: user.estado || 'Activo',
-            extra: user.extra || '',
+            estado: STATUS_TO_BACKEND[user.estado] ?? user.estado,
         };
         if (user.contraseña) {
             payload.password = user.contraseña;
         }
         const data = await apiService.updateUser(user.id, payload);
-        return { success: true, data };
+        return { success: true, data: normalizeUser(data) };
     },
 
     delete: async (id) => {
