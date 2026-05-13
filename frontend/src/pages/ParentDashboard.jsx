@@ -270,7 +270,7 @@ export const ParentDashboard = ({ tab }) => {
                 )}
 
                 {/* Map Tracking */}
-                {(activeSection === 'tracking' || showTracking) && student && (studentStatus.status === 'En el bus' || showTracking) && (
+                {(activeSection === 'tracking' || showTracking) && student && (
                     <div className="glass rounded-3xl overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                         <div className="p-4 md:p-5 border-b border-white/5 flex items-center justify-between">
                             <h2 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
