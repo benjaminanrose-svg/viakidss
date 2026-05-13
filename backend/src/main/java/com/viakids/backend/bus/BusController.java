@@ -47,4 +47,10 @@ public class BusController {
         Bus bus = busService.getById(id);
         return ResponseEntity.ok(Map.of("lat", bus.getLat(), "lng", bus.getLng()));
     }
+
+    @PutMapping("/{id}/location")
+    public ResponseEntity<?> updateLocation(@PathVariable UUID id, @RequestBody Map<String, Double> body) {
+        Bus bus = busService.updateLocation(id, body.get("lat"), body.get("lng"));
+        return ResponseEntity.ok(Map.of("lat", bus.getLat(), "lng", bus.getLng(), "id", bus.getId()));
+    }
 }

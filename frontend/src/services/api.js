@@ -25,6 +25,7 @@ export const apiService = {
     updateBus: (id, data) => api.put(`/buses/${id}`, data).then(r => r.data),
     deleteBus: (id) => api.delete(`/buses/${id}`).then(r => r.data),
     getBusLocation: (id) => api.get(`/buses/${id}/location`).then(r => r.data),
+    updateBusLocation: (id, lat, lng) => api.put(`/buses/${id}/location`, { lat, lng }).then(r => r.data),
 
     getRoutes: () => api.get('/routes').then(r => r.data),
     getRoute: (id) => api.get(`/routes/${id}`).then(r => r.data),

@@ -2,34 +2,39 @@ import { useState, useEffect, useMemo } from 'react';
 import { DashboardLayout } from '../components/templates/DashboardLayout';
 import { Map as MapIcon, Navigation, AlertTriangle, Clock } from 'lucide-react';
 import { BusMap } from '../components/ui/BusMap';
-import { useBuses } from '../hooks/useBuses';
+import { apiService } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
+const STATUS_MAP = { 'EN_RUTA': 'En Ruta', 'EN_ESPERA': 'En Espera' };
+
+const normalize = (b) => ({
+    ...b,
+    estado: STATUS_MAP[b.estado] ?? b.estado,
+    lat: b.lat || -33.4489,
+    lng: b.lng || -70.6693,
+});
+
 export const LiveTracking = () => {
-    const { allBuses } = useBuses();
-    const [buses, setBuses] = useState([]);
+    const [allBuses, setAllBuses] = useState([]);
+    const [lastUpdate, setLastUpdate] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (allBuses.length > 0) {
-            setBuses(allBuses.filter(b => b.estado === 'En Ruta').map(b => ({
-                ...b,
-                lat: b.lat || -33.4489,
-                lng: b.lng || -70.6693,
-            })));
-        }
-    }, [allBuses]);
+        const fetchBuses = () => {
+            apiService.getBuses()
+                .then(data => {
+                    setAllBuses((data || []).map(normalize));
+                    setLastUpdate(new Date());
+                })
+                .catch(() => {});
+        };
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setBuses(prev => prev.map(bus => ({
-                ...bus,
-                lat: bus.lat + (Math.random() - 0.5) * 0.002,
-                lng: bus.lng + (Math.random() - 0.5) * 0.002,
-            })));
-        }, 5000);
+        fetchBuses();
+        const interval = setInterval(fetchBuses, 5000);
         return () => clearInterval(interval);
     }, []);
+
+    const buses = allBuses.filter(b => b.estado === 'En Ruta');
 
     const mapMarkers = useMemo(() => buses.map(bus => ({
         position: [bus.lat, bus.lng],
@@ -74,6 +79,7 @@ export const LiveTracking = () => {
                     <div className="p-4 bg-slate-900/50 flex flex-wrap items-center gap-4 text-sm">
                         <div className="flex items-center gap-2 text-slate-300"><Clock size={14} className="text-blue-400" /> Actualización cada 5s</div>
                         <div className="flex items-center gap-2 text-slate-300"><MapIcon size={14} className="text-emerald-400" /> Santiago, Chile</div>
+                        {lastUpdate && <div className="flex items-center gap-2 text-slate-500 text-xs ml-auto">Última actualización: {lastUpdate.toLocaleTimeString('es-CL')}</div>}
                     </div>
                 </div>
 
