@@ -29,9 +29,20 @@ export const UserManagement = () => {
         if (!newUser.nombre || !newUser.email) { setError('Nombre y email son obligatorios'); return; }
         if (!editingUser && !newUser.contraseña) { setError('La contraseña es obligatoria para nuevos usuarios'); return; }
         if (newUser.contraseña && newUser.contraseña.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return; }
-        if (editingUser) { await updateUser(newUser); toast.success('Usuario actualizado'); }
-        else { await addUser(newUser); toast.success('Usuario creado'); }
-        setIsModalOpen(false);
+        try {
+            if (editingUser) {
+                const res = await updateUser(newUser);
+                if (res?.success === false) { setError(res.error || 'Error al actualizar'); return; }
+                toast.success('Usuario actualizado');
+            } else {
+                const res = await addUser(newUser);
+                if (res?.success === false) { setError(res.error || 'Error al crear usuario'); return; }
+                toast.success('Usuario creado');
+            }
+            setIsModalOpen(false);
+        } catch (e) {
+            setError('Error de conexión con el servidor');
+        }
     };
 
     const handleDelete = async (id) => { await deleteUser(id); toast.success('Usuario eliminado'); };
