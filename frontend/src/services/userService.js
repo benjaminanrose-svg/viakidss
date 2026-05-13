@@ -1,55 +1,43 @@
-// src/services/userService.js
+import { apiService } from './api';
+
 export const userService = {
     getAll: async () => {
-        // Simulando llamada a API con estructura extendida
-        return [
-            {
-                id: 1,
-                nombre: 'Juan Pérez',
-                email: 'juan@viakids.cl',
-                rol: 'Administrador',
-                telefono: '+56912345678',
-                estado: 'Activo',
-                extra: '-'
-            },
-            {
-                id: 2,
-                nombre: 'Ana López',
-                email: 'ana@viakids.cl',
-                rol: 'Conductor',
-                telefono: '+56987654321',
-                estado: 'Activo',
-                extra: 'Lic. Clase A'
-            },
-            {
-                id: 3,
-                nombre: 'Carlos Ruiz',
-                email: 'carlos@viakids.cl',
-                rol: 'Apoderado',
-                telefono: '+56911223344',
-                estado: 'Activo',
-                extra: 'Estudiante: Pedro Ruiz'
-            },
-        ];
+        const data = await apiService.getUsers();
+        return data || [];
     },
 
     create: async (user) => {
-        // Retornamos el objeto incluyendo el campo extra
-        return {
-            success: true,
-            data: {
-                ...user,
-                id: Date.now(),
-                extra: user.extra || '-'
-            }
+        const payload = {
+            nombre: user.nombre,
+            email: user.email,
+            rol: user.rol,
+            telefono: user.telefono || '',
+            estado: user.estado || 'Activo',
+            extra: user.extra || '',
+            password: user.contraseña,
         };
+        const data = await apiService.createUser(payload);
+        return { success: true, data };
     },
 
     update: async (user) => {
-        return { success: true, data: user };
+        const payload = {
+            nombre: user.nombre,
+            email: user.email,
+            rol: user.rol,
+            telefono: user.telefono || '',
+            estado: user.estado || 'Activo',
+            extra: user.extra || '',
+        };
+        if (user.contraseña) {
+            payload.password = user.contraseña;
+        }
+        const data = await apiService.updateUser(user.id, payload);
+        return { success: true, data };
     },
 
     delete: async (id) => {
+        await apiService.deleteUser(id);
         return { success: true };
-    }
+    },
 };
