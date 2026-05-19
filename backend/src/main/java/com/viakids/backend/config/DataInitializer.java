@@ -46,13 +46,21 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Fix any existing users whose passwords were stored as plain text before the BCrypt fix
-        userRepository.findAll().forEach(user -> {
-            String pwd = user.getPassword();
-            if (pwd != null && !pwd.startsWith("$2a$") && !pwd.startsWith("$2b$")) {
-                user.setPassword(passwordEncoder.encode(pwd));
-                userRepository.save(user);
-            }
+        // Always ensure seed accounts have the correct password regardless of DB state
+        userRepository.findByEmail("admin@viakids.cl").ifPresent(u -> {
+            u.setPassword(passwordEncoder.encode("123456"));
+            u.setEstado(User.UserStatus.ACTIVO);
+            userRepository.save(u);
+        });
+        userRepository.findByEmail("conductor@viakids.cl").ifPresent(u -> {
+            u.setPassword(passwordEncoder.encode("123456"));
+            u.setEstado(User.UserStatus.ACTIVO);
+            userRepository.save(u);
+        });
+        userRepository.findByEmail("apoderado@viakids.cl").ifPresent(u -> {
+            u.setPassword(passwordEncoder.encode("123456"));
+            u.setEstado(User.UserStatus.ACTIVO);
+            userRepository.save(u);
         });
 
         if (userRepository.count() > 0) return;
