@@ -30,8 +30,13 @@ export const userService = {
             telefono: user.telefono || '',
             estado: STATUS_TO_BACKEND[user.estado] ?? user.estado,
         };
-        const data = await apiService.createUser(payload);
-        return { success: true, data: normalizeUser(data) };
+        try {
+            const data = await apiService.createUser(payload);
+            return { success: true, data: normalizeUser(data) };
+        } catch (error) {
+            const msg = error.response?.data?.message || 'Error al crear usuario';
+            return { success: false, error: msg };
+        }
     },
 
     update: async (user) => {
@@ -45,8 +50,13 @@ export const userService = {
         if (user.contraseña) {
             payload.password = user.contraseña;
         }
-        const data = await apiService.updateUser(user.id, payload);
-        return { success: true, data: normalizeUser(data) };
+        try {
+            const data = await apiService.updateUser(user.id, payload);
+            return { success: true, data: normalizeUser(data) };
+        } catch (error) {
+            const msg = error.response?.data?.message || 'Error al actualizar usuario';
+            return { success: false, error: msg };
+        }
     },
 
     delete: async (id) => {
