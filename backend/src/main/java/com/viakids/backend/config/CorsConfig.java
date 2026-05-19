@@ -18,11 +18,9 @@ public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
-        // Convert patterns to regex: convert wildcard patterns to proper regex
         List<String> patterns = List.of(allowedOrigins.split(","))
             .stream()
             .map(String::trim)
-            .map(this::convertToRegex)
             .collect(Collectors.toList());
 
         CorsConfiguration config = new CorsConfiguration();
@@ -36,17 +34,5 @@ public class CorsConfig {
         source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);
-    }
-
-    /**
-     * Convert simple patterns with wildcards to regex patterns
-     * Examples:
-     * - "http://localhost:5173" -> "http://localhost:5173"
-     * - "https://*.vercel.app" -> "https://.*\\.vercel\\.app"
-     */
-    private String convertToRegex(String pattern) {
-        return pattern
-            .replace(".", "\\.")
-            .replace("*", ".*");
     }
 }
