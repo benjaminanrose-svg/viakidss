@@ -46,6 +46,15 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // Fix any existing users whose passwords were stored as plain text before the BCrypt fix
+        userRepository.findAll().forEach(user -> {
+            String pwd = user.getPassword();
+            if (pwd != null && !pwd.startsWith("$2a$") && !pwd.startsWith("$2b$")) {
+                user.setPassword(passwordEncoder.encode(pwd));
+                userRepository.save(user);
+            }
+        });
+
         if (userRepository.count() > 0) return;
 
         // Users
