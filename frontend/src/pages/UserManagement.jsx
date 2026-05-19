@@ -3,7 +3,7 @@ import { DashboardLayout } from '../components/templates/DashboardLayout';
 import { DataTable } from '../components/ui/DataTable';
 import { Modal } from '../components/ui/Modal';
 import { useUsers } from '../hooks/useUsers';
-import { Plus, Search, Edit2, Trash2, AlertCircle, Download, Users } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, AlertCircle, Download, Users, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import * as XLSX from 'xlsx';
 
@@ -13,21 +13,36 @@ export const UserManagement = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
-    const [newUser, setNewUser] = useState({ nombre: '', email: '', rol: 'Apoderado', telefono: '', estado: 'Activo', extra: '' });
+    const [newUser, setNewUser] = useState({ nombre: '', email: '', contraseña: '', rol: 'Apoderado', telefono: '', estado: 'Activo', extra: '' });
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleOpenModal = (user = null) => {
         setError('');
-        if (user) { setEditingUser(user); setNewUser(user); }
-        else { setEditingUser(null); setNewUser({ nombre: '', email: '', rol: 'Apoderado', telefono: '', estado: 'Activo', extra: '' }); }
+        setShowPassword(false);
+        if (user) { setEditingUser(user); setNewUser({ ...user, contraseña: '' }); }
+        else { setEditingUser(null); setNewUser({ nombre: '', email: '', contraseña: '', rol: 'Apoderado', telefono: '', estado: 'Activo', extra: '' }); }
         setIsModalOpen(true);
     };
 
     const handleSave = async () => {
-        if (!newUser.nombre || !newUser.email) { setError('Nombre y email obligatorios'); return; }
-        if (editingUser) { await updateUser(newUser); toast.success('Usuario actualizado'); }
-        else { await addUser(newUser); toast.success('Usuario creado'); }
-        setIsModalOpen(false);
+        if (!newUser.nombre || !newUser.email) { setError('Nombre y email son obligatorios'); return; }
+        if (!editingUser && !newUser.contraseña) { setError('La contraseña es obligatoria para nuevos usuarios'); return; }
+        if (newUser.contraseña && newUser.contraseña.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return; }
+        try {
+            if (editingUser) {
+                const res = await updateUser(newUser);
+                if (res?.success === false) { setError(res.error || 'Error al actualizar'); return; }
+                toast.success('Usuario actualizado');
+            } else {
+                const res = await addUser(newUser);
+                if (res?.success === false) { setError(res.error || 'Error al crear usuario'); return; }
+                toast.success('Usuario creado');
+            }
+            setIsModalOpen(false);
+        } catch (e) {
+            setError('Error de conexión con el servidor');
+        }
     };
 
     const handleDelete = async (id) => { await deleteUser(id); toast.success('Usuario eliminado'); };
@@ -121,7 +136,19 @@ export const UserManagement = () => {
                 <div className="space-y-4">
                     {error && <div className="text-red-400 flex items-center gap-2 text-sm bg-red-500/10 p-3 rounded-xl"><AlertCircle size={16} /> {error}</div>}
                     <input className="w-full bg-slate-900/50 p-3 rounded-xl text-white border border-white/10 outline-none" placeholder="Nombre Completo" value={newUser.nombre} onChange={e => setNewUser({ ...newUser, nombre: e.target.value })} />
-                    <input className="w-full bg-slate-900/50 p-3 rounded-xl text-white border border-white/10 outline-none" placeholder="Email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
+                    <input className="w-full bg-slate-900/50 p-3 rounded-xl text-white border border-white/10 outline-none" placeholder="Email" type="email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
+                    <div className="relative">
+                        <input
+                            className="w-full bg-slate-900/50 p-3 rounded-xl text-white border border-white/10 outline-none pr-12"
+                            placeholder={editingUser ? 'Nueva contraseña (dejar vacío para no cambiar)' : 'Contraseña *'}
+                            type={showPassword ? 'text' : 'password'}
+                            value={newUser.contraseña}
+                            onChange={e => setNewUser({ ...newUser, contraseña: e.target.value })}
+                        />
+                        <button type="button" onClick={() => setShowPassword(p => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors">
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    </div>
                     <select className="w-full bg-slate-900/50 p-3 rounded-xl text-white border border-white/10 outline-none [&>option]:bg-slate-900" value={newUser.rol} onChange={e => setNewUser({ ...newUser, rol: e.target.value })}>
                         <option>Administrador</option><option>Conductor</option><option>Apoderado</option>
                     </select>

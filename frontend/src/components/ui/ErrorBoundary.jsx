@@ -19,20 +19,17 @@ export class ErrorBoundary extends Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
-                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 max-w-md w-full text-center space-y-6">
-                        <div className="bg-red-500/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto">
-                            <AlertTriangle size={40} className="text-red-400" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-bold text-white mb-2">Algo salió mal</h2>
-                            <p className="text-slate-400 text-sm">Ha ocurrido un error inesperado. Por favor intenta recargar la página.</p>
-                        </div>
+                <div style={{ minHeight: '100vh', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+                    <div style={{ background: 'white', borderRadius: '16px', padding: '32px', maxWidth: '500px', width: '100%', textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#dc2626', marginBottom: '12px' }}>Error detectado</h2>
+                        <p style={{ color: '#374151', fontSize: '14px', marginBottom: '16px', wordBreak: 'break-all' }}>
+                            {this.state.error?.message || 'Error desconocido'}
+                        </p>
                         <button
                             onClick={() => window.location.reload()}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 mx-auto transition-all"
+                            style={{ background: '#2563eb', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
                         >
-                            <RefreshCw size={18} /> Recargar Página
+                            Recargar Página
                         </button>
                     </div>
                 </div>

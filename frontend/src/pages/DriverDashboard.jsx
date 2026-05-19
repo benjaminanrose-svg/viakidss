@@ -40,9 +40,11 @@ export const DriverDashboard = ({ tab }) => {
 
     useEffect(() => {
         apiService.getBuses().then(buses => {
-            const myBus = user?.email === 'conductor@viakids.cl'
-                ? buses.find(b => b.conductor === 'Juan Pérez') || buses[0]
-                : buses[0];
+            const userName = user?.name?.toLowerCase() || '';
+            const firstName = userName.split(' ')[0];
+            const myBus = buses.find(b =>
+                firstName && b.conductor?.toLowerCase().includes(firstName)
+            ) || buses[0];
             setBusInfo(myBus);
         }).catch(() => {});
         apiService.getStudents().then(setStudents).catch(() => {});
@@ -58,6 +60,11 @@ export const DriverDashboard = ({ tab }) => {
         apiService.getIncidents().then(setIncidents).catch(() => {});
         apiService.getPresets().then(setPresets).catch(() => {});
         apiService.getNotifications().then(list => setNotifHistorial(list)).catch(() => {});
+
+        const notifInterval = setInterval(() => {
+            apiService.getNotifications().then(list => setNotifHistorial(list)).catch(() => {});
+        }, 30000);
+        return () => clearInterval(notifInterval);
     }, []);
 
     useEffect(() => {
@@ -67,6 +74,13 @@ export const DriverDashboard = ({ tab }) => {
             stopWatching();
         }
     }, [routeActive]);
+
+    // Send GPS location to backend every time it updates while route is active
+    useEffect(() => {
+        if (routeActive && location && busInfo?.id) {
+            apiService.updateBusLocation(busInfo.id, location.lat, location.lng).catch(() => {});
+        }
+    }, [location]);
 
     useEffect(() => {
         if (!routeActive || !routeStartTime) {

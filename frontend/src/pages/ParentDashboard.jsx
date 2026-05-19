@@ -80,16 +80,20 @@ export const ParentDashboard = ({ tab }) => {
             ];
             loadStudentData(localStudents[0]);
         });
-        apiService.getNotifications().then(list => {
-            const filtered = list.filter(n => {
-                const roles = (n.targetRoles || '').split(',');
-                return !n.targetRoles || roles.includes('PARENT') || roles.includes('ALL');
-            });
-            setNotifications(filtered);
-        }).catch(() => {});
+        const fetchNotifications = () => {
+            apiService.getNotifications().then(list => {
+                const filtered = list.filter(n => {
+                    const roles = (n.targetRoles || '').split(',');
+                    return !n.targetRoles || roles.includes('PARENT') || roles.includes('ALL');
+                });
+                setNotifications(filtered);
+            }).catch(() => {});
+        };
+        fetchNotifications();
+        const notifInterval = setInterval(fetchNotifications, 30000);
 
-        // Real bus location polling from backend
-        const busInterval = setInterval(() => {
+        // Poll bus location every 5s
+        const fetchBusLocation = () => {
             const currentStudent = studentRef.current;
             if (currentStudent?.busId) {
                 apiService.getBus(currentStudent.busId).then(bus => {
@@ -98,8 +102,13 @@ export const ParentDashboard = ({ tab }) => {
                     }
                 }).catch(() => {});
             }
-        }, 10000);
-        return () => clearInterval(busInterval);
+        };
+        const busInterval = setInterval(fetchBusLocation, 5000);
+
+        return () => {
+            clearInterval(notifInterval);
+            clearInterval(busInterval);
+        };
     }, [user?.name]);
 
     const handleEmergencyCall = () => {
@@ -261,7 +270,7 @@ export const ParentDashboard = ({ tab }) => {
                 )}
 
                 {/* Map Tracking */}
-                {(activeSection === 'tracking' || showTracking) && student && (studentStatus.status === 'En el bus' || showTracking) && (
+                {(activeSection === 'tracking' || showTracking) && student && (
                     <div className="glass rounded-3xl overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                         <div className="p-4 md:p-5 border-b border-white/5 flex items-center justify-between">
                             <h2 className="text-base md:text-lg font-bold text-white flex items-center gap-2">

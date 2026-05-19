@@ -34,17 +34,19 @@ const ProtectedRoute = ({ children, allowedRole }) => {
     return children;
 };
 
-const AppContent = ({ splashDone }) => {
+const ROLE_HOME = { admin: '/admin', driver: '/driver', parent: '/parent' };
+
+const AppContent = () => {
     const { user } = useAuth();
+    const defaultHome = user ? (ROLE_HOME[user.role] || '/admin') : '/';
 
     return (
         <ErrorBoundary>
             <PageTransition>
                 <Routes>
-                    {!splashDone ? (
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                    ) : user ? (
+                    {user ? (
                         <>
+                            <Route path="/" element={<Navigate to={defaultHome} replace />} />
                             <Route path="/admin" element={<ProtectedRoute allowedRole="admin"><AdminDashboard /></ProtectedRoute>} />
                             <Route path="/admin/usuarios" element={<ProtectedRoute allowedRole="admin"><UserManagement /></ProtectedRoute>} />
                             <Route path="/admin/flota" element={<ProtectedRoute allowedRole="admin"><BusManagement /></ProtectedRoute>} />
@@ -60,7 +62,7 @@ const AppContent = ({ splashDone }) => {
                             <Route path="/parent" element={<ProtectedRoute allowedRole="parent"><ParentDashboard /></ProtectedRoute>} />
                             <Route path="/parent/tracking" element={<ProtectedRoute allowedRole="parent"><ParentDashboard tab="tracking" /></ProtectedRoute>} />
                             <Route path="/parent/qr" element={<ProtectedRoute allowedRole="parent"><ParentDashboard tab="qr" /></ProtectedRoute>} />
-                            <Route path="*" element={<Navigate to="/" replace />} />
+                            <Route path="*" element={<Navigate to={defaultHome} replace />} />
                         </>
                     ) : (
                         <>
@@ -90,7 +92,7 @@ function App() {
             <AuthProvider>
                 <ToastProvider>
                     <OfflineBanner />
-                    <AppContent splashDone={!showSplash} />
+                    <AppContent />
                 </ToastProvider>
             </AuthProvider>
         </Router>

@@ -47,14 +47,19 @@ export const Notifications = () => {
     });
 
     useEffect(() => {
-        apiService.getNotifications().then(list => {
-            const role = userRoleMap[user?.role] || 'PARENT';
-            setHistorial(list.filter(n => {
-                const roles = (n.targetRoles || '').split(',');
-                return !n.targetRoles || roles.includes(role) || roles.includes('ALL');
-            }));
-        }).catch(() => {});
+        const role = userRoleMap[user?.role] || 'PARENT';
+        const fetchNotifs = () => {
+            apiService.getNotifications().then(list => {
+                setHistorial(list.filter(n => {
+                    const roles = (n.targetRoles || '').split(',');
+                    return !n.targetRoles || roles.includes(role) || roles.includes('ALL');
+                }));
+            }).catch(() => {});
+        };
+        fetchNotifs();
         apiService.getRoutes().then(setRoutes).catch(() => {});
+        const interval = setInterval(fetchNotifs, 30000);
+        return () => clearInterval(interval);
     }, [user?.role]);
 
     const handleSend = async (e) => {

@@ -41,29 +41,19 @@ export const useUsers = () => {
     }, [users, searchTerm, roleFilter]);
 
     const addUser = async (newUser) => {
-        try {
-            const res = await userService.create(newUser);
-            if (res?.success) {
-                setUsers(p => [...p, res.data]);
-            }
-            return res;
-        } catch (error) {
-            console.error("Error al crear usuario:", error);
-            return { success: false, error: "Error de conexión" };
+        const res = await userService.create(newUser);
+        if (res?.success) {
+            setUsers(p => [...p, res.data]);
         }
+        return res;
     };
 
     const updateUser = async (updatedUser) => {
-        try {
-            const res = await userService.update(updatedUser);
-            if (res?.success) {
-                setUsers(p => p.map(u => u.id === updatedUser.id ? res.data : u));
-            }
-            return res;
-        } catch (error) {
-            console.error("Error al actualizar usuario:", error);
-            return { success: false, error: "Error de conexión" };
+        const res = await userService.update(updatedUser);
+        if (res?.success) {
+            setUsers(p => p.map(u => u.id === updatedUser.id ? res.data : u));
         }
+        return res;
     };
 
     const deleteUser = async (id) => {
